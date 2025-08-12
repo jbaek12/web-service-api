@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css" />
+    <title>게시판 목록</title>
+</head>
+
+<script>
+    function searchBoard() {
+        const srchVal = document.getElementById('srchVal').value;
+        fetch(`/list?page=0&size=10&searchVal=` + srchVal, {
+            method: 'GET'
+        })
+            .then(response => {
+                if (response.ok) {
+                } else {
+                    alert("검색 실패");
+                }
+            });
+    }
+</script>
+
+<body>
+    <div class="list-wrapper">
+        <h1>게시글 목록</h1>
+        <div class="toolbar">
+            <a href="/list/showForm" class="btn-new">새 글 작성</a>
+            <div class="search-bar">
+                <input type="text" id="srchVal" class="search-input" placeholder="검색어를 입력하세요" />
+                <button type="button" class="search-button" onclick="searchBoard()">검색</button>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tbody>
+                    <!-- 리스트가 비어있지 않을 경우 -->
+                    <tr th:each="board : ${boards}" th:if="${not #lists.isEmpty(boards)}">
+                        <td th:text="${board.id}"></td>
+                        <td>
+                            <a th:href="@{'/list/detail'(id=${board.id})}" th:text="${board.title}"></a>
+                        </td>
+                        <td th:text="${board.author}"></td>
+                        <td th:text="${#temporals.format(board.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    </tr>
+
+                    <!-- 리스트가 비어있을 경우 -->
+                    <tr th:if="${#lists.isEmpty(boards)}">
+                        <td colspan="4" style="text-align: center;">게시글이 없습니다.</td>
+                    </tr>
+            </tbody>
+
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <ul>
+                <li th:if="${boards.hasPrevious()}">
+                    <a th:href="@{/list(page=${boards.number - 1}, srchVal=${srchVal})}">이전</a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(0, boards.totalPages - 1)}"
+                    th:classappend="${boards.number == i} ? 'active'">
+                    <a th:href="@{/list(page=${i})}" th:text="${i + 1}"></a>
+                </li>
+                <li th:if="${boards.hasNext()}">
+                    <a th:href="@{/list(page=${boards.number + 1}, srchVal=${srchVal})}">다음</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
