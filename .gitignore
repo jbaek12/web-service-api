@@ -33,3 +33,20 @@ build/
 .vscode/
 src/main/resources/application.properties
 DockerFile
+
+
+# Log Files
+*.log
+logs/
+
+# Java Bytecode and binaries
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# OS-specific files
+.DS_Store
+Thumbs.db
